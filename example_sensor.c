@@ -1,6 +1,6 @@
 /*
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- Copyright (c) 2021 Cascoda Ltd
+ Copyright (c) 2022 Cascoda Ltd
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -54,10 +54,6 @@
  *
  * ## stack specific defines
  *
- *  - OC_SECURITY
-      enable security
- *    - OC_PKI
- *      enable use of PKI
  * - __linux__
  *   build for linux
  * - WIN32
@@ -112,13 +108,16 @@ STATIC CRITICAL_SECTION cs;   /**< event loop variable */
 
 #define btoa(x) ((x) ? "true" : "false")
 
-/** the state of the dpa 421.61 */
-bool g_mystate = false;
+bool g_mystate = false;/**<  the state of the dpa 421.61 */
 volatile int quit = 0; /**< stop variable, used by handle_signal */
+bool g_reset = false;  /**< reset the device (from startup) */
+
 
 void
 oc_add_s_mode_response_cb(char *url, oc_rep_t *rep, oc_rep_t *rep_value)
 {
+  (void) rep;
+  (void) rep_value;
   PRINT("oc_add_s_mode_response_cb %s\n", url);
 }
 
@@ -137,7 +136,7 @@ app_init(void)
   int ret = oc_init_platform("Cascoda", NULL, NULL);
 
   /* set the application name, version, base url, device serial number */
-  ret |= oc_add_device(MY_NAME, "1.0", "//", "000003", NULL, NULL);
+  ret |= oc_add_device(MY_NAME, "1.0", "//", "0000011", NULL, NULL);
 
   oc_device_info_t *device = oc_core_get_device_info(0);
   PRINT("Serial Number: %s\n", oc_string(device->serialnumber));
@@ -157,6 +156,8 @@ app_init(void)
   /* set the model */
   oc_core_set_device_model(0, "my model");
 
+  /* this is for debugging/development purposes only */
+  /* this is actual client code */
   oc_set_s_mode_response_cb(oc_add_s_mode_response_cb);
 
   return ret;
@@ -210,74 +211,30 @@ get_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
   PRINT("-- End get_dpa_421_61\n");
 }
 
-/**
- * post method for "p/push" resource.
- * The function has as input the request body, which are the input values of the
- * POST method.
- * The input values (as a set) are checked if all supplied values are correct.
- * If the input values are correct, they will be assigned to the global property
- * values.
- * Resource Description:
- *
- * @param request the request representation.
- * @param interfaces the used interfaces during the request.
- * @param user_data the supplied user data.
- */
-void
-post_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
-                void *user_data)
-{
-  (void)interfaces;
-  (void)user_data;
-  bool error_state = false;
-  PRINT("-- Begin post_dpa_421_61:\n");
-  oc_rep_t *rep = NULL;
-
-  if (oc_is_s_mode_request(request)) {
-    PRINT(" S-MODE\n");
-
-    rep = oc_s_mode_get_value(request);
-
-  } else {
-    rep = request->request_payload;
-  }
-  if ((rep != NULL) && (rep->type == OC_REP_BOOL)) {
-    PRINT("  post_dpa_421_61 received : %d\n", rep->value.boolean);
-    g_mystate = rep->value.boolean;
-    oc_send_cbor_response(request, OC_STATUS_CHANGED);
-    PRINT("-- End post_dpa_421_61\n");
-    return;
-  }
-
-  oc_send_response(request, OC_STATUS_BAD_REQUEST);
-  PRINT("-- End post_dpa_421_61\n");
-}
 
 /**
  * register all the resources to the stack
  * this function registers all application level resources:
  * - each resource path is bind to a specific function for the supported methods
- * (GET, POST, PUT)
+ * (GET, POST, PUT, DELETE)
  * - each resource is
  *   - secure
  *   - observable
  *   - discoverable
- *   - used interfaces, including the default interface.
- *     default interface is the first of the list of interfaces as specified in
- * the input file
+ *   - used interfaces
  */
 void
 register_resources(void)
 {
-  PRINT("Register Resource with local path \"/p/push\"\n");
+  PRINT("Register Resource with local path \"/p/1\"\n");
 
   PRINT("Light Switching Sensor 421.61 (LSSB) : SwitchOnOff \n");
   PRINT("Data point 61 (DPT_Switch) \n");
 
-  PRINT("Register Resource with local path \"/p/push\"\n");
+  PRINT("Register Resource with local path \"/p/1\"\n");
 
   oc_resource_t *res_pushbutton =
-    oc_new_resource("push button", "p/push", 2, 0);
+    oc_new_resource("push button", "p/1", 2, 0);
   oc_resource_bind_resource_type(res_pushbutton, "urn:knx:dpa.421.61");
   oc_resource_bind_resource_type(res_pushbutton, "DPT_Switch");
   oc_resource_bind_content_type(res_pushbutton, APPLICATION_CBOR);
@@ -291,10 +248,8 @@ register_resources(void)
      events are send when oc_notify_observers(oc_resource_t *resource) is
     called. this function must be called when the value changes, preferable on
     an interrupt when something is read from the hardware. */
-  /*oc_resource_set_observable(res_352, true); */
+  /*oc_resource_set_observable(res_pushbutton, true); */
   oc_resource_set_request_handler(res_pushbutton, OC_GET, get_dpa_421_61, NULL);
-  oc_resource_set_request_handler(res_pushbutton, OC_POST, post_dpa_421_61,
-                                  NULL);
   oc_add_resource(res_pushbutton);
 }
 
@@ -309,7 +264,75 @@ factory_presets_cb(size_t device, void *data)
 {
   (void)device;
   (void)data;
+
+  if (g_reset) {
+    PRINT("resetting device\n");
+    oc_knx_device_storage_reset(0, 2);
+  }
 }
+
+/**
+ * application reset
+ *
+ * @param device the device identifier of the list of devices
+ * @param data the supplied data.
+ */
+void
+reset_cb(size_t device, int reset_value, void *data)
+{
+  (void)data;
+
+  PRINT("reset_cb %d\n", reset_value);
+}
+
+/**
+ * restart the device (application depended)
+ *
+ * @param device the device identifier of the list of devices
+ * @param data the supplied data.
+ */
+void
+restart_cb(size_t device, void *data)
+{
+  (void)data;
+
+  PRINT("-----restart_cb -------\n");
+  exit(0);
+}
+
+/**
+ * set the host name on the device (application depended)
+ *
+ * @param device the device identifier of the list of devices
+ * @param host_name the host name to be set on the device
+ * @param data the supplied data.
+ */
+void
+hostname_cb(size_t device, oc_string_t host_name, void *data)
+{
+  (void)data;
+
+  PRINT("-----host name ------- %s\n", oc_string(host_name));
+}
+
+/* separate files for each call to transport a block of data*/
+void
+swu_cb(size_t device, size_t offset, uint8_t *payload, size_t len, void *data)
+{
+  char *fname = (char *)data;
+  PRINT(" swu_cb %s block=%d size=%d \n", fname, (int)offset, (int)len);
+
+  FILE *fp = fopen(fname, "rw");
+  fseek(fp, offset, SEEK_SET);
+  size_t written = fwrite(payload, len, 1, fp);
+  if (written != len) {
+    PRINT(" swu_cb returned %d != %d (expected)\n", (int)written, (int)len);
+  }
+  fclose(fp);
+}
+
+
+
 
 /**
  * initializes the global variables
@@ -328,7 +351,7 @@ issue_requests_s_mode(void)
 
   PRINT("TEST TEST \n\n");
 
-  oc_do_s_mode("/p/push", "w");
+  oc_do_s_mode("/p/1", "w");
 }
 
 #ifndef NO_MAIN
@@ -370,38 +393,16 @@ handle_signal(int signal)
   quit = 1;
 }
 
-#ifdef OC_SECURITY
-/**
- * oc_ownership_status_cb callback implementation
- * handler to print out the DI after onboarding
- *
- * @param device_uuid the device ID
- * @param device_index the index in the list of device IDs
- * @param owned owned or unowned indication
- * @param user_data the supplied user data.
- */
-void
-oc_ownership_status_cb(const oc_uuid_t *device_uuid, size_t device_index,
-                       bool owned, void *user_data)
-{
-  (void)user_data;
-  (void)device_index;
-  (void)owned;
-
-  char uuid[37] = { 0 };
-  oc_uuid_to_str(device_uuid, uuid, OC_UUID_LEN);
-  PRINT(" oc_ownership_status_cb: DI: '%s'\n", uuid);
-}
-#endif /* OC_SECURITY */
 
 void
 print_usage()
 {
   PRINT("Usage:\n");
   PRINT("no arguments : starts the server\n");
-  PRINT("-help : this message\n");
-  PRINT("s-mode: starts the server and issue a s-mode message at start up "
+  PRINT("-help  : this message\n");
+  PRINT("s-mode : starts the server and issue a s-mode message at start up "
         "according the application/config\n");
+  PRINT("reset  : does an full reset of the device\n");
   exit(0);
 }
 
@@ -444,6 +445,10 @@ main(int argc, char *argv[])
     if (strcmp(argv[1], "s-mode") == 0) {
       do_send_s_mode = true;
     }
+    if (strcmp(argv[1], "reset") == 0) {
+      PRINT(" internal reset\n");
+      g_reset = true;
+    }
     if (strcmp(argv[1], "-help") == 0) {
       print_usage();
     }
@@ -481,7 +486,12 @@ main(int argc, char *argv[])
     handler.requests_entry = issue_requests_s_mode;
   }
 
+  /* set the application callbacks */
+  oc_set_hostname_cb(hostname_cb, NULL);
+  oc_set_reset_cb(reset_cb, NULL);
+  oc_set_restart_cb(restart_cb, NULL);
   oc_set_factory_presets_cb(factory_presets_cb, NULL);
+  oc_set_swu_cb(swu_cb, (void *)fname);
 
   /* start the stack */
   init = oc_main_init(&handler);
@@ -491,22 +501,20 @@ main(int argc, char *argv[])
     return init;
   }
 
-#ifdef OC_SECURITY
-  /* print out the current DI of the device */
-  char uuid[37] = { 0 };
-  oc_uuid_to_str(oc_core_get_device_id(0), uuid, OC_UUID_LEN);
-  PRINT(" DI: '%s'\n", uuid);
-  oc_add_ownership_status_cb(oc_ownership_status_cb, NULL);
-#endif /* OC_SECURITY */
-
-#ifdef OC_SECURITY
-  PRINT("Security - Enabled\n");
+#ifdef OC_OSCORE
+  PRINT("OSCORE Security - Enabled\n");
 #else
-  PRINT("Security - Disabled\n");
-#endif /* OC_SECURITY */
+  PRINT("OSCORE Security - Disabled\n");
+#endif /* OC_OSCORE */
 
   oc_device_info_t *device = oc_core_get_device_info(0);
   PRINT("serial number: %s", oc_string(device->serialnumber));
+  oc_device_mode_display(0);
+  oc_endpoint_t *my_ep = oc_connectivity_get_endpoints(0);
+  if (my_ep != NULL) {
+    PRINTipaddr(*my_ep);
+    PRINT("\n");
+  }
 
   PRINT("Server \"%s\" running, waiting on incoming "
         "connections.\n",
