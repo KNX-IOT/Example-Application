@@ -6,7 +6,7 @@ include(FetchContent)
 FetchContent_Declare(
     knx-iot-stack
     GIT_REPOSITORY https://github.com/KNX-IOT/KNX-IOT-STACK.git
-    GIT_TAG cmake-definition-fix
+    GIT_TAG master
 )
 
 if(NOT knx-iot-stack_POPULATED)
