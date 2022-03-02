@@ -18,5 +18,5 @@ add_executable(example_sensor
 	${PROJECT_SOURCE_DIR}/example_sensor.c
 )
 
-
 target_link_libraries(example_sensor kisClientServer)
+
