@@ -33,7 +33,13 @@ make example_sensor
 
 ### Windows
 
-WIP
+Building the example application with Visual Studio is identical to building
+the KNX-IoT stack, the only difference being that you must perform the steps
+on a fresh clone of the Example Application repository instead.
+
+Refer to [the KNX-IoT guide on building for Windows]() for detailed steps.
+During Step 1, make sure you do `git clone https://github.com/KNX-IOT/Example-Application.git`
+instead of cloning the KNX-IoT stack, and then follow the rest of the guide.
 
 ## Extending the example application
 
