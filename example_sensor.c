@@ -196,7 +196,10 @@ get_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
   }
 
   CborError error;
-  error = cbor_encode_boolean(&g_encoder, g_mystate);
+  oc_rep_begin_root_object();
+  oc_rep_i_set_boolean(root, 1, g_mystate);
+  oc_rep_end_root_object();
+  
   if (error) {
     oc_status_code = true;
   }
@@ -235,18 +238,21 @@ post_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
 
   if (oc_is_s_mode_request(request)) {
     PRINT(" S-MODE\n");
-
     rep = oc_s_mode_get_value(request);
-
   } else {
     rep = request->request_payload;
   }
-  if ((rep != NULL) && (rep->type == OC_REP_BOOL)) {
-    PRINT("  post_dpa_421_61 received : %d\n", rep->value.boolean);
-    g_mystate = rep->value.boolean;
-    oc_send_cbor_response(request, OC_STATUS_CHANGED);
-    PRINT("-- End post_dpa_421_61\n");
-    return;
+  
+  while (rep != NULL) {
+    /* handle the type of payload correctly. */
+    if ((rep->iname == 1) && (rep->type == OC_REP_BOOL)) {
+      PRINT("  post_dpa_421_61 received : %d\n", rep->value.boolean);
+      g_mystate = rep->value.boolean;
+      oc_send_cbor_response(request, OC_STATUS_CHANGED);
+      PRINT("-- End post_dpa_421_61\n");
+      return;
+    }
+    rep = rep->next;
   }
 
   oc_send_response(request, OC_STATUS_BAD_REQUEST);
