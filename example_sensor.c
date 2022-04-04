@@ -236,7 +236,7 @@ post_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
   PRINT("-- Begin post_dpa_421_61:\n");
   oc_rep_t *rep = NULL;
 
-  if (oc_is_s_mode_request(request)) {
+  if (oc_is_redirected_request(request)) {
     PRINT("  S-MODE or /p\n");
   }
   rep = request->request_payload;
