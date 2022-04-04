@@ -237,12 +237,9 @@ post_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
   oc_rep_t *rep = NULL;
 
   if (oc_is_s_mode_request(request)) {
-    PRINT(" S-MODE\n");
-    rep = oc_s_mode_get_value(request);
-  } else {
-    rep = request->request_payload;
+    PRINT("  S-MODE or /p\n");
   }
-  
+  rep = request->request_payload;
   while (rep != NULL) {
     /* handle the type of payload correctly. */
     if ((rep->iname == 1) && (rep->type == OC_REP_BOOL)) {
