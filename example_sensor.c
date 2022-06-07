@@ -73,7 +73,6 @@
  */
 
 #include "oc_api.h"
-#include "api/oc_knx_client.h"
 #include "oc_core_res.h"
 #include "port/oc_clock.h"
 #include <signal.h>
@@ -332,7 +331,8 @@ issue_requests_s_mode(void)
 
   PRINT("TEST TEST \n\n");
 
-  oc_do_s_mode("/p/push", "w");
+  oc_do_s_mode_with_scope(2, "/p/push", "w");
+  oc_do_s_mode_with_scope(5, "/p/push", "w");
 }
 
 #ifndef NO_MAIN
