@@ -73,6 +73,7 @@
  */
 
 #include "oc_api.h"
+#include "oc_knx_client.h"
 #include "oc_core_res.h"
 #include "port/oc_clock.h"
 #include <signal.h>
