@@ -31,7 +31,10 @@ on your system:
 
 ```bash
 # Download this repository
+# from github :
 git clone https://github.com/KNX-IOT/Example-Application.git
+# from gitlab :
+# git clone https://gitlab.knx.org/shared-projects/knx-iot-point-api-example-application.git
 # Change directory to the newly created dir
 cd Example-Application
 # Create build directory & go there
@@ -54,7 +57,10 @@ proceeding with the following steps.
 In Powershell, type the following commands:
 ```powershell
 # Download this repository
+# from github :
 git clone https://github.com/KNX-IOT/Example-Application.git
+# from gitlab :
+# git clone https://gitlab.knx.org/shared-projects/knx-iot-point-api-example-application.git
 # Change directory to the newly created dir
 cd Example-Application
 # Create build directory & go there
