@@ -31,7 +31,10 @@ on your system:
 
 ```bash
 # Download this repository
+# from github
 git clone https://github.com/KNX-IOT/Example-Application.git
+# from gitlab
+# git clone https://gitlab.knx.org/shared-projects/knx-iot-point-api-example-application.git
 # Change directory to the newly created dir
 cd Example-Application
 # Create build directory & go there
@@ -52,7 +55,7 @@ the KNX-IoT stack, the only difference being that you must perform the steps
 on a fresh clone of the Example Application repository instead.
 
 Refer to [the KNX-IoT guide on building for Windows](https://knx-iot.github.io/building_windows/) for detailed steps.
-During Step 1, make sure you do `git clone https://github.com/KNX-IOT/Example-Application.git`
+During Step 1, make sure you do clone this repo, instead of the repo of the stack.
 instead of cloning the KNX-IoT stack, and then follow the rest of the guide.
 
 ## Extending the example application
