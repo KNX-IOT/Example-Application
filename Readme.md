@@ -31,9 +31,9 @@ on your system:
 
 ```bash
 # Download this repository
-# from github
+# from github :
 git clone https://github.com/KNX-IOT/Example-Application.git
-# from gitlab
+# from gitlab :
 # git clone https://gitlab.knx.org/shared-projects/knx-iot-point-api-example-application.git
 # Change directory to the newly created dir
 cd Example-Application
@@ -50,13 +50,33 @@ make example_sensor
 
 ### Windows
 
-Building the example application with Visual Studio is identical to building
-the KNX-IoT stack, the only difference being that you must perform the steps
-on a fresh clone of the Example Application repository instead.
+Please make sure that you have a working Visual Studio build system before
+proceeding with the following steps.
 
-Refer to [the KNX-IoT guide on building for Windows](https://knx-iot.github.io/building_windows/) for detailed steps.
-During Step 1, make sure you do clone this repo, instead of the repo of the stack.
-instead of cloning the KNX-IoT stack, and then follow the rest of the guide.
+
+In Powershell, type the following commands:
+```powershell
+# Download this repository
+# from github :
+git clone https://github.com/KNX-IOT/Example-Application.git
+# from gitlab :
+# git clone https://gitlab.knx.org/shared-projects/knx-iot-point-api-example-application.git
+# Change directory to the newly created dir
+cd Example-Application
+# Create build directory & go there
+mkdir build
+cd build/
+# Generate CMake build system. "../" is the path to the previous
+# directory, which contains the CMakeLists.txt script.
+cmake ../
+```
+
+This will generate several `.vcxproj`. You should then open `ALL_BUILD.vcxproj`
+within Visual Studio and build the targets as usual, by selecting Build -> Build Solution
+within the Visual Studio menu bar.
+
+Note: more info at [the KNX-IoT guide on building for Windows](https://knx-iot.github.io/building_windows/).
+
 
 ## Extending the example application
 
