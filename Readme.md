@@ -1,3 +1,7 @@
+![Linux](https://github.com/KNX-IOT/Example-Application/actions/workflows/cmake-linux.yml/badge.svg)
+![Windows](https://github.com/KNX-IOT/Example-Application/actions/workflows/cmake-windows.yml/badge.svg)
+![sync](https://github.com/KNX-IOT/Example-Application/actions/workflows/gitlabsync.yml/badge.svg)
+
 # Example KNX Application
 <!-- TOC -->
 
