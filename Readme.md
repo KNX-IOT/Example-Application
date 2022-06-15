@@ -7,6 +7,7 @@
 
 - [Example KNX Application](#example-knx-application)
   - [Introduction](#introduction)
+    - [Application info](#application-info)
   - [Prerequisites](#prerequisites)
   - [Build instructions](#build-instructions)
     - [Linux](#linux)
@@ -19,6 +20,14 @@
 
 This repository contains a barebones example of what you need to do in order to
 build an application on top of the open-source [KNX IoT Point API stack](https://github.com/KNX-IOT/KNX-IOT-STACK).
+
+Note that the example-application is not designed to be a fully functional KNX IoT Point API device.
+
+### Application info
+
+ | resource url |  functional block/dpa  | GET | POST |
+ | ------------ | ---------------------- | ----| ---- |
+ | p/o_1_1      | urn:knx:dpa.421.61     | Yes | Yes  |
 
 ## Prerequisites
 
@@ -92,5 +101,5 @@ different .c file.
 
 The call to `target_link_libraries` is what brings in the KNX-IoT stack in.
 It instructs the build system to link against a static library containing
-all KNX-IoT functionality, and also lets you `#include` KNX headers within
+all KNX IoT Point API functionality, and also lets you `#include` KNX headers within
 the executable that links to this library.
