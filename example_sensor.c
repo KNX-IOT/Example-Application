@@ -163,7 +163,7 @@ app_init(void)
 }
 
 /**
- * get method for "p/push" resource.
+ * get method for "p/o_1_1" resource.
  * function is called to initialize the return values of the GET method.
  * initialization of the returned values are done from the global property
  * values. Resource Description: This Resource describes a binary switch
@@ -175,7 +175,7 @@ app_init(void)
  * @param user_data the user data.
  */
 STATIC void
-get_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
+get_o_1_1(oc_request_t *request, oc_interface_mask_t interfaces,
                void *user_data)
 {
   (void)user_data; /* variable not used */
@@ -214,7 +214,7 @@ get_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
 }
 
 /**
- * post method for "p/push" resource.
+ * post method for "p/o_1_1" resource.
  * The function has as input the request body, which are the input values of the
  * POST method.
  * The input values (as a set) are checked if all supplied values are correct.
@@ -227,7 +227,7 @@ get_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
  * @param user_data the supplied user data.
  */
 void
-post_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
+post_o_1_1(oc_request_t *request, oc_interface_mask_t interfaces,
                 void *user_data)
 {
   (void)interfaces;
@@ -265,22 +265,25 @@ post_dpa_421_61(oc_request_t *request, oc_interface_mask_t interfaces,
  *   - secure
  *   - observable
  *   - discoverable
- *   - used interfaces, including the default interface.
- *     default interface is the first of the list of interfaces as specified in
- * the input file
+ *   - used interfaces
+ 
+ * URL Table
+ * | resource url |  functional block/dpa  | GET | POST |
+ * | ------------ | ---------------------- | ----| ---- |
+ * | p/o_1_1      | urn:knx:dpa.421.61     | Yes | Yes  |
  */
 void
 register_resources(void)
 {
-  PRINT("Register Resource with local path \"/p/push\"\n");
+  PRINT("Register Resource with local path \"/p/o_1_1\"\n");
 
   PRINT("Light Switching Sensor 421.61 (LSSB) : SwitchOnOff \n");
   PRINT("Data point 61 (DPT_Switch) \n");
 
-  PRINT("Register Resource with local path \"/p/push\"\n");
+  PRINT("Register Resource with local path \"/p/o_1_1\"\n");
 
   oc_resource_t *res_pushbutton =
-    oc_new_resource("push button", "p/push", 2, 0);
+    oc_new_resource("push button", "p/o_1_1", 2, 0);
   oc_resource_bind_resource_type(res_pushbutton, "urn:knx:dpa.421.61");
   oc_resource_bind_resource_type(res_pushbutton, "DPT_Switch");
   oc_resource_bind_content_type(res_pushbutton, APPLICATION_CBOR);
@@ -295,8 +298,8 @@ register_resources(void)
     called. this function must be called when the value changes, preferable on
     an interrupt when something is read from the hardware. */
   /*oc_resource_set_observable(res_352, true); */
-  oc_resource_set_request_handler(res_pushbutton, OC_GET, get_dpa_421_61, NULL);
-  oc_resource_set_request_handler(res_pushbutton, OC_POST, post_dpa_421_61,
+  oc_resource_set_request_handler(res_pushbutton, OC_GET, get_o_1_1, NULL);
+  oc_resource_set_request_handler(res_pushbutton, OC_POST, post_o_1_1,
                                   NULL);
   oc_add_resource(res_pushbutton);
 }
@@ -329,10 +332,10 @@ static void
 issue_requests_s_mode(void)
 {
 
-  PRINT("TEST TEST \n\n");
+  PRINT("Demo for interaction\n\n");
 
-  oc_do_s_mode_with_scope(2, "/p/push", "w");
-  oc_do_s_mode_with_scope(5, "/p/push", "w");
+  oc_do_s_mode_with_scope(2, "/p/o_1_1", "w");
+  oc_do_s_mode_with_scope(5, "/p/o_1_1", "w");
 }
 
 #ifndef NO_MAIN
