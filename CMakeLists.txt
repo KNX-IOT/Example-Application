@@ -13,6 +13,9 @@ FetchContent_Declare(
     GIT_REPOSITORY https://gitlab.knx.org/shared-projects/knx-iot-point-api-public-stack.git
     GIT_TAG master
 )
+if(MSVC)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
 
 
 set(USE_GITLAB OFF CACHE BOOL "use gitlab as source for KNX IoT Stack")
