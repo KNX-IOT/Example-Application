@@ -163,7 +163,7 @@ app_init(void)
 }
 
 /**
- * get method for "p/o_1_1" resource.
+ * get method for "/p/o_1_1" resource.
  * function is called to initialize the return values of the GET method.
  * initialization of the returned values are done from the global property
  * values. Resource Description: This Resource describes a binary switch
@@ -214,7 +214,7 @@ get_o_1_1(oc_request_t *request, oc_interface_mask_t interfaces,
 }
 
 /**
- * post method for "p/o_1_1" resource.
+ * post method for "/p/o_1_1" resource.
  * The function has as input the request body, which are the input values of the
  * POST method.
  * The input values (as a set) are checked if all supplied values are correct.
@@ -270,7 +270,7 @@ post_o_1_1(oc_request_t *request, oc_interface_mask_t interfaces,
  * URL Table
  * | resource url |  functional block/dpa  | GET | POST |
  * | ------------ | ---------------------- | ----| ---- |
- * | p/o_1_1      | urn:knx:dpa.421.61     | Yes | Yes  |
+ * | /p/o_1_1     | urn:knx:dpa.421.61     | Yes | Yes  |
  */
 void
 register_resources(void)
@@ -283,7 +283,7 @@ register_resources(void)
   PRINT("Register Resource with local path \"/p/o_1_1\"\n");
 
   oc_resource_t *res_pushbutton =
-    oc_new_resource("push button", "p/o_1_1", 2, 0);
+    oc_new_resource("push button", "/p/o_1_1", 2, 0);
   oc_resource_bind_resource_type(res_pushbutton, "urn:knx:dpa.421.61");
   oc_resource_bind_resource_type(res_pushbutton, "DPT_Switch");
   oc_resource_bind_content_type(res_pushbutton, APPLICATION_CBOR);
