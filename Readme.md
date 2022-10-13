@@ -27,7 +27,7 @@ Note that the example-application is not designed to be a fully functional KNX I
 
  | resource url |  functional block/dpa  | GET | POST |
  | ------------ | ---------------------- | ----| ---- |
- | p/o_1_1      | urn:knx:dpa.421.61     | Yes | Yes  |
+ | /p/o_1_1     | urn:knx:dpa.421.61     | Yes | Yes  |
 
 ## Prerequisites
 
