@@ -214,9 +214,9 @@ get_o_1_1(oc_request_t *request, oc_interface_mask_t interfaces,
 }
 
 /**
- * post method for "/p/o_1_1" resource.
+ * put method for "/p/o_1_1" resource.
  * The function has as input the request body, which are the input values of the
- * POST method.
+ * PUT method.
  * The input values (as a set) are checked if all supplied values are correct.
  * If the input values are correct, they will be assigned to the global property
  * values.
@@ -227,13 +227,13 @@ get_o_1_1(oc_request_t *request, oc_interface_mask_t interfaces,
  * @param user_data the supplied user data.
  */
 void
-post_o_1_1(oc_request_t *request, oc_interface_mask_t interfaces,
+put_o_1_1(oc_request_t *request, oc_interface_mask_t interfaces,
                 void *user_data)
 {
   (void)interfaces;
   (void)user_data;
   bool error_state = false;
-  PRINT("-- Begin post_dpa_421_61:\n");
+  PRINT("-- Begin put_dpa_421_61:\n");
   oc_rep_t *rep = NULL;
 
   if (oc_is_redirected_request(request)) {
@@ -243,17 +243,17 @@ post_o_1_1(oc_request_t *request, oc_interface_mask_t interfaces,
   while (rep != NULL) {
     /* handle the type of payload correctly. */
     if ((rep->iname == 1) && (rep->type == OC_REP_BOOL)) {
-      PRINT("  post_dpa_421_61 received : %d\n", rep->value.boolean);
+      PRINT("  put_dpa_421_61 received : %d\n", rep->value.boolean);
       g_mystate = rep->value.boolean;
       oc_send_cbor_response(request, OC_STATUS_CHANGED);
-      PRINT("-- End post_dpa_421_61\n");
+      PRINT("-- End put_dpa_421_61\n");
       return;
     }
     rep = rep->next;
   }
 
   oc_send_response(request, OC_STATUS_BAD_REQUEST);
-  PRINT("-- End post_dpa_421_61\n");
+  PRINT("-- End put_dpa_421_61\n");
 }
 
 /**
@@ -268,7 +268,7 @@ post_o_1_1(oc_request_t *request, oc_interface_mask_t interfaces,
  *   - used interfaces
  
  * URL Table
- * | resource url |  functional block/dpa  | GET | POST |
+ * | resource url |  functional block/dpa  | GET | PUT |
  * | ------------ | ---------------------- | ----| ---- |
  * | /p/o_1_1     | urn:knx:dpa.421.61     | Yes | Yes  |
  */
@@ -299,7 +299,7 @@ register_resources(void)
     an interrupt when something is read from the hardware. */
   /*oc_resource_set_observable(res_352, true); */
   oc_resource_set_request_handler(res_pushbutton, OC_GET, get_o_1_1, NULL);
-  oc_resource_set_request_handler(res_pushbutton, OC_POST, post_o_1_1,
+  oc_resource_set_request_handler(res_pushbutton, OC_PUT, put_o_1_1,
                                   NULL);
   oc_add_resource(res_pushbutton);
 }
